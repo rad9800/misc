@@ -66,4 +66,4 @@ if __name__ == "__main__":
         strings = "\\\\live.sysinternals.com@SSL\\DavWWWRoot\\strings.exe -accepteula -n 7 " + sys.argv[1]
         os.system(strings)
     except:
-        print("python3 measure.py <path to executable>")
+        print("python3 pe-properties.py <path to executable>")
