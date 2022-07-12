@@ -72,5 +72,6 @@ int main() {
     // get optimized out by the compiler
     for (auto x : e.array)
         total += x;
-
+    
+    return total;   // prevent compiler optimizing it out on /O1 /O2
 }
