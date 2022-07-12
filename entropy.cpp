@@ -29,7 +29,14 @@ struct E {
     T array[N];
 };
 
-constexpr auto e = E<4000, long long, 0>();
+// https://docs.microsoft.com/en-us/cpp/build/reference/section-specify-section-attributes?view=msvc-170
+#pragma code_seg(".text")
+__declspec(allocate(".text"))
+constexpr auto e = E<2500, long long, 1>();
+
+#pragma code_seg(".data")
+__declspec(allocate(".data"))
+constexpr auto e2 = E<2500, long long, 1>();
 
 
 /*++
@@ -72,6 +79,9 @@ int main() {
     // get optimized out by the compiler
     for (auto x : e.array)
         total += x;
-    
-    return total;   // prevent compiler optimizing it out on /O1 /O2
+
+    for (auto x : e2.array)
+        total += x;
+
+    return total;
 }
