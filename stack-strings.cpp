@@ -1,8 +1,5 @@
 #include <array>
-#include <cstddef>
-#include <algorithm>
-#include <utility>
-#include <stdio.h>
+#include <cstdio>
 
 template<typename T, size_t N>
 constexpr auto stack(const T(&str)[N]) 
@@ -40,6 +37,7 @@ int main()
     // lea     rdx, QWORD PTR stack_2$[rbp-128]
     // lea     rcx, OFFSET FLAT:`string'
     // mov     WORD PTR stack_2$[rbp-112], 29281 ; 00007261H
+    // https://godbolt.org/z/rEcGffdh1
     constexpr auto stack_2 = stack("hello world : char");   
     static_assert(std::is_same_v<decltype(stack_2), const std::array<char, 19>>);
     printf("%s\n", &stack_2[0]);
