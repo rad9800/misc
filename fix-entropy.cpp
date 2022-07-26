@@ -30,6 +30,7 @@ struct E {
 };
 
 // https://docs.microsoft.com/en-us/cpp/build/reference/section-specify-section-attributes?view=msvc-170
+// allows us to the fix the entropy of any section
 #pragma code_seg(".text")
 __declspec(allocate(".text"))
 constexpr auto e = E<2500, long long, 1>();
