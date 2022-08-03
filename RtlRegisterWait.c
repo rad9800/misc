@@ -6,6 +6,7 @@ Credit to:
 @5pider for Ekko 
 * (https://github.com/Cracked5pider/Ekko)
 @domchell for How I Met Your Beacon 
+@peterwintrsmith
 * (https://www.mdsec.co.uk/2022/08/part-3-how-i-met-your-beacon-brute-ratel/)
 --*/
 
