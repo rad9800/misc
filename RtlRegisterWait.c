@@ -29,6 +29,8 @@ typedef struct
 
 void CreateTimer( DWORD SleepTime )
 {
+    // If you don't want to call RtlRegisterWait you can use RegisterWaitForSingleObject which is just a thunk
+    // for RtlRegisterWait (just replace RtlRegisterWait with RegisterWaitForSingleObject)
     IMPORTAPI( L"NTDLL.dll", RtlRegisterWait, NTSTATUS,
         PHANDLE NewWaitObject, HANDLE Object, WAITORTIMERCALLBACKFUNC Callback,
         PVOID Context, ULONG Milliseconds, ULONG Flags );
