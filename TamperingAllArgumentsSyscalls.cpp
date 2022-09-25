@@ -3,11 +3,11 @@ TamperingSyscalls with all argument spoofing by @rad9800
 Now we can restore all arguments, now not limited to x64 ABI
 ([rcx, rdx, r8, r9]) which was a limitation of the previous PoC.
 with simple manipulation of the stack. We call with NULL for all
-the initial arguments and then restore it as necessary in the 
+the initial arguments and then restore it as necessary in the
 exception handler.
-
 This is just a small example of >4 arguments....
 --*/
+
 #include <Windows.h>
 #include <winternl.h>
 
@@ -239,13 +239,14 @@ LONG WINAPI OneShotHardwareBreakpointHandler( PEXCEPTION_POINTERS ExceptionInfo 
 				
 				case NTMAPVIEWOFSECTION_ENUM:
 
-					PRINT("R10\t: 0x%x\n", ExceptionInfo->ContextRecord->R10);
-					PRINT("Rdx\t: 0x%x\n", ExceptionInfo->ContextRecord->Rdx);
-					PRINT("R8\t: 0x%p\n", ExceptionInfo->ContextRecord->R8);
-					PRINT("R9\t: 0x%x\n", ExceptionInfo->ContextRecord->R9);
+
 					PRINT("RSP\t: 0x%p\n", ExceptionInfo->ContextRecord->Rsp);
 					PRINT("*RSP\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp));
-					
+
+					PRINT("R10\t\t: 0x%x\n", ExceptionInfo->ContextRecord->R10);
+					PRINT("Rdx\t\t: 0x%x\n", ExceptionInfo->ContextRecord->Rdx);
+					PRINT("R8\t\t: 0x%p\n", ExceptionInfo->ContextRecord->R8);
+					PRINT("R9\t\t: 0x%x\n", ExceptionInfo->ContextRecord->R9);
 					PRINT("*RSP + 0x28\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x28));
 					PRINT("*RSP + 0x30\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x30));
 					PRINT("*RSP + 0x38\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x38));
@@ -258,7 +259,7 @@ LONG WINAPI OneShotHardwareBreakpointHandler( PEXCEPTION_POINTERS ExceptionInfo 
 					ExceptionInfo->ContextRecord->R8 =	(DWORD_PTR)((NtMapViewOfSectionArgs*)(StateArray[EnumState].arguments))->BaseAddress;
 					ExceptionInfo->ContextRecord->R9 =	(DWORD_PTR)((NtMapViewOfSectionArgs*)(StateArray[EnumState].arguments))->ZeroBits;
 
-					// We start at 0x28 as 0x8 for stack alignment then 0x20 for shadow space (not always used - 0x8 * 4-[rcx, rdx, r8, r9])
+					// We start at 0x28 as 0x8 for stack alignment then 0x20 for shadow space (not always used - 0x8 * 4 [rcx, rdx, r8, r9])
 					*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x28) = (DWORD_PTR)((NtMapViewOfSectionArgs*)(StateArray[EnumState].arguments))->CommitSize;
 					*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x30) = (DWORD_PTR)((NtMapViewOfSectionArgs*)(StateArray[EnumState].arguments))->SectionOffset;
 					*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x38) = (DWORD_PTR)((NtMapViewOfSectionArgs*)(StateArray[EnumState].arguments))->ViewSize;
@@ -267,7 +268,10 @@ LONG WINAPI OneShotHardwareBreakpointHandler( PEXCEPTION_POINTERS ExceptionInfo 
 					*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x50) = (DWORD_PTR)((NtMapViewOfSectionArgs*)(StateArray[EnumState].arguments))->Win32Protect;
 					
 					PRINT("===========================\n");
-
+					PRINT("R10\t\t: 0x%x\n", ExceptionInfo->ContextRecord->R10);
+					PRINT("Rdx\t\t: 0x%x\n", ExceptionInfo->ContextRecord->Rdx);
+					PRINT("R8\t\t: 0x%p\n", ExceptionInfo->ContextRecord->R8);
+					PRINT("R9\t\t: 0x%x\n", ExceptionInfo->ContextRecord->R9);
 					PRINT("*RSP + 0x28\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x28));
 					PRINT("*RSP + 0x30\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x30));
 					PRINT("*RSP + 0x38\t: 0x%p\n", *(PULONG64)(ExceptionInfo->ContextRecord->Rsp + 0x38));
