@@ -25,7 +25,7 @@ void trace_event_patch(
 {
     ExceptionInfo->ContextRecord->Rip = find_gadget(
         ExceptionInfo->ContextRecord->Rip,
-        "\xc3", 1, 30);
+        "\xc3", 1, 100);
     ExceptionInfo->ContextRecord->EFlags |= (1 << 16); // Set Resume Flag
 }
 
@@ -34,8 +34,6 @@ int main()
     const PVOID handler = hardware_engine_init();
 
     FARPROC ptrNtTraceEvent = GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtTraceEvent");
-    uintptr_t addr = find_gadget(ptrNtTraceEvent, "\xc3", 1, 100);
-
 
     insert_descriptor_entry(ptrNtTraceEvent, 0, trace_event_patch, GetCurrentThreadId());
 
