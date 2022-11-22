@@ -165,8 +165,8 @@ VOID RemoveEntryList(LIST_ENTRY* Entry)
 
 LIST_ENTRY* removeDllLoadNotifications()
 {
-	LIST_ENTRY* dllNotificationList = getDllLoadNotifications();
-	if (dllNotificationList)
+	LIST_ENTRY* dllNotificationList = NULL;
+	if (dllNotificationList = getDllLoadNotifications())
 	{
 		LIST_ENTRY* head = dllNotificationList;
 		LIST_ENTRY* next = dllNotificationList->Flink;
