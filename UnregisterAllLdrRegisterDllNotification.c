@@ -149,20 +149,6 @@ LIST_ENTRY* getDllLoadNotifications()
 	}
 }
 
-VOID RemoveEntryList(LIST_ENTRY* Entry)
-{
-	if (Entry != NULL) {
-		LIST_ENTRY* OldFlink;
-		LIST_ENTRY* OldBlink;
-		OldFlink = Entry->Flink;
-		OldBlink = Entry->Blink;
-		OldFlink->Blink = OldBlink;
-		OldBlink->Flink = OldFlink;
-		Entry->Flink = NULL;
-		Entry->Blink = NULL;
-	}
-}
-
 LIST_ENTRY* removeDllLoadNotifications()
 {
 	LIST_ENTRY* dllNotificationList = NULL;
