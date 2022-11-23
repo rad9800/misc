@@ -1,9 +1,9 @@
-/* RtlQueueWorkItemLoadLibrary.c by @rad9800
+/* WorkItemLoadLibrary.c by @rad9800
  * Credit goes to:
- * - Whoever at mdsec discovered the technique
+ * - Peter Winter-Smith (@peterwintrsmith)
  * - Proofpoint threatinsight team for their detailed analysis
  *
- * Loads a DLL by queuing a work item (RtlQueueWorkItem) with
+ * Loads a DLL by queuing a work item (RtlQueueWorkItem/) with
  * the address of LoadLibraryW and a pointer to the buffer
  *
  */
@@ -39,24 +39,43 @@ HMODULE getModuleHandle(LPCWSTR libraryName)
 	return NULL;
 }
 
-HMODULE queueLoadLibrary(WCHAR* libraryName)
+HMODULE queueLoadLibrary(WCHAR* libraryName, BOOL swtch)
 {
-	IMPORTAPI(L"NTDLL.dll", RtlQueueWorkItem, NTSTATUS, PVOID, PVOID, ULONG);
 	IMPORTAPI(L"NTDLL.dll", NtWaitForSingleObject, NTSTATUS, HANDLE, BOOLEAN, PLARGE_INTEGER);
 
-	if (NT_SUCCESS(RtlQueueWorkItem(&LoadLibraryW, (PVOID)L"DBGHELP.dll", WT_EXECUTEDEFAULT)))
+
+
+	if (swtch)
 	{
-		LARGE_INTEGER timeout;
-		timeout.QuadPart = -500000;
-		NtWaitForSingleObject(NtCurrentProcess(), FALSE, &timeout);
-		return getModuleHandle(libraryName);
+		IMPORTAPI(L"NTDLL.dll", RtlQueueWorkItem, NTSTATUS, PVOID, PVOID, ULONG);
+
+		if (NT_SUCCESS(RtlQueueWorkItem(&LoadLibraryW, (PVOID)libraryName, WT_EXECUTEDEFAULT)))
+		{
+			LARGE_INTEGER timeout;
+			timeout.QuadPart = -500000;
+			NtWaitForSingleObject(NtCurrentProcess(), FALSE, &timeout);
+		}
 	}
-	return NULL;
+	else
+	{
+		IMPORTAPI(L"NTDLL.dll", RtlRegisterWait, NTSTATUS, PHANDLE, HANDLE, WAITORTIMERCALLBACKFUNC, PVOID, ULONG, ULONG);
+		HANDLE newWaitObject;
+		HANDLE eventObject = CreateEventW(NULL, FALSE, FALSE, NULL);
+
+		if (NT_SUCCESS(RtlRegisterWait(&newWaitObject, eventObject, LoadLibraryW, (PVOID)libraryName, 0, WT_EXECUTEDEFAULT)))
+		{
+			WaitForSingleObject(eventObject, 500);
+		}
+	}
+
+	return getModuleHandle(libraryName);
+
 }
 
 int main()
 {
 	WCHAR libraryName[] = L"DBGHELP.dll";
-	HMODULE moduleHandle = queueLoadLibrary(libraryName);
+	HMODULE moduleHandle = queueLoadLibrary(libraryName, TRUE);
+
 	printf("0x%p", moduleHandle);
 }
