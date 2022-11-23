@@ -384,7 +384,7 @@ void rip_ret_patch(
 {
     ExceptionInfo->ContextRecord->Rip = find_gadget(
         ExceptionInfo->ContextRecord->Rip,
-        "\xc3", 1, 100);
+        "\xc3", 1, 500);
     ExceptionInfo->ContextRecord->EFlags |= (1 << 16); // Set Resume Flag
 }
 
