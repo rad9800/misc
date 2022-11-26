@@ -1,7 +1,7 @@
 /****************************************************************************************
  * ClearVeh.c by @rad9800
  * Credit goes to:
- * - @peterwintrsmith (mdsec)
+ * - @peterwintrsmith/@modexpblog (mdsec)
  *
  * 1. Find the LdrpVectorHandlerList by registering a dummy VEH and walking the doubly
  *	linked list until we find a pointer in the NTDLL .data section
