@@ -430,11 +430,12 @@ hardware_engine_stop(
 
 void heap_free_memset(const PEXCEPTION_POINTERS ExceptionInfo)
 {
-    PVOID addr = ExceptionInfo->ContextRecord->Rcx;
-    DWORD size = get_heap_allocation_size(addr);
+    const DWORD size = HeapSize(ExceptionInfo->ContextRecord->Rcx, 
+						  ExceptionInfo->ContextRecord->Rdx, 
+						  ExceptionInfo->ContextRecord->R8);
     if (size)
     {
-        memset(addr, 0, size);
+        memset(ExceptionInfo->ContextRecord->R8, 0, size);
     }
     ExceptionInfo->ContextRecord->EFlags |= (1 << 16);
 }
@@ -447,15 +448,15 @@ int main()
 {
     const PVOID handler = hardware_engine_init();
 
-	//
+    //
     // 0 - all threads / GetCurrentThreadId() 
     //
-	insert_descriptor_entry(HeapFree, 0, heap_free_memset, 0, FALSE);
+    insert_descriptor_entry(HeapFree, 0, heap_free_memset, 0, FALSE);
 
     PVOID memory = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 0x1000);
-    strcpy_s(memory,0x1000, "Confidential C2 Information: 10.1.33.7");
+    strcpy_s(memory, 0x1000, "Confidential C2 Information: 10.1.33.7");
 
-	HeapFree(memory, 0, 0);
+    HeapFree(GetProcessHeap(), 0, memory);
 
     delete_descriptor_entry(HeapFree, 0);
 
