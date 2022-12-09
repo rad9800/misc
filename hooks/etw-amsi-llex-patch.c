@@ -11,9 +11,9 @@
 #include <Windows.h>
 #include <tlhelp32.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/*                                          Macros                                      */
-//////////////////////////////////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////////////////////////////////
+ /*                                          Macros                                      */
+ //////////////////////////////////////////////////////////////////////////////////////////
 
 #define MALLOC( size ) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size)
 #define FREE( adr ) HeapFree(GetProcessHeap(), 0, adr)
@@ -252,11 +252,11 @@ void delete_descriptor_entry(
 
     if (found)
     {
-        set_hardware_breakpoint(
-            tid,
+        set_hardware_breakpoints(
             adr,
             pos,
-            FALSE
+            FALSE,
+            tid
         );
     }
 
@@ -394,7 +394,7 @@ void load_library_patch(
 {
 #define SPECIFIC_DLL TOKENIZE( DBGHELP.DLL )
 
-	//
+    //
     // Block certain DLLs from being loaded.
     //
 
@@ -451,7 +451,7 @@ int main()
     HMODULE dbgModule = LoadLibraryExW(L"DBGHELP.dll", NULL, 0);
 
 
-	//
+    //
     // do whatever
     //
 
